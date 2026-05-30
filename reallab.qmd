@@ -1,0 +1,406 @@
+---
+title: "Project: Hockey Profile of a Rude Player" 
+author: Giada Brose, Jacob Kasten, Jack Jay
+format:  
+  html: 
+    embed-resources: true 
+    code-tools: true 
+    toc: true 
+    html-table-processing: none 
+    theme: slate 
+editor: source 
+markdown: 
+    wrap: 72
+execute:  
+  error: true 
+  echo: true 
+  message: false 
+  warning: false
+---
+
+# Lab Introduction
+
+The National Hockey League (NHL) is a North American (Canada & United States) professional sporting league with 32 teams. Teams consist of 23 rostered players (20 playable, 3 reserved), with 6 players (1 Goalie, 2 Defensemen, 3 Offensemen) allowed on the ice at any given moment.
+
+Lots of data is recorded by the NHL, including 1. player demographic data, 2. play-by-play data during games, and 3. penalty data. This lab seeks to analyze NHL data through visualization, interpretation, and simulation. In particular, this lab will be structured as though **YOU** are an NHL Data Analyst, where you will find the player who is penalized the most, then use simulation, shot maps, and data cleaning to create a real NHL profile of this **rude** player!
+
+::: callout-tip
+Data dictionaries are crucial to understanding how the NHL records. Please use the following data dictionary to aid in your NHL Data Analyst journey: \[https://cpslo-my.sharepoint.com/:w:/g/personal/jkasten_calpoly_edu/IQAPWSaxak0CSaYkmgiRKu4xAYQB_1qvRaAPBzzcpU9tYhw?e=B8PagT \]
+:::
+
+# Pre-Work
+
+#### Loading packages
+
+There are several packages needed in order to use this data. Load them here! Additionally, you will need to install some github packages (hockeyR, sportyR) for this lab. Install them using information from \[here\] and \[here\]
+
+```{r}
+library(devtools)
+library(hockeyR)
+library(tidyverse)
+library(sportyR)
+library(ggimage)
+library(knitr)
+library(kableExtra)
+library(broom)
+```
+
+#### Reading in the data
+
+Additionally, we need to read in our .csv hockey datasets!
+
+```{r}
+nhl_data <- read_csv("NHL Player and General Data.csv")
+
+pbp_data <- read_csv("PBP2018-2019.csv")
+```
+
+# Cleaning
+
+The multi-billion dollar NHL cannot afford to have clean data, so we need to clean it for them!
+
+#### Question 0: Cleaning play-by-play data
+
+::: callout-important
+The play-by-play dataset is huge, so we've cleaned it for you! However, the second dataset of this lab (the NHL Player Data) will be YOUR responsibility to clean :)
+:::
+
+```{r}
+# Code Cleaning play-by-play data
+pdp <- pbp_data |> 
+  select(event_id, description, period, home_score, away_score, event_player_1_name, event_player_2_name, event_player_3_name, event_player_4_name, event_goalie_name, strength, penalty_severity, penalty_minutes, empty_net, x, y, x_fixed, y_fixed, shot_distance, shot_angle, home_on_1, home_on_2, home_on_3, home_on_4, home_on_5, home_on_6, away_on_1, away_on_2, away_on_3, away_on_4, away_on_5, away_on_6, home_goalie, away_goalie, game_id, event_player_1_id, event_player_2_id, event_player_3_id, event_player_4_id, period_time, date_time, event_team_abbr, home_final, away_final, game_start, game_end, home_name,  home_division_name_short, home_conference_name, away_name, away_division_name_short, away_conference_name, home_id, away_id) |> 
+  filter(event_player_1_name == "Cody.McLeod" | event_player_2_name == "Cody.McLeod" | event_player_3_name == "Cody.McLeod" | event_player_4_name == "Cody.McLeod")
+```
+
+### Question 1: To help simplify and clean the dataset for analysis, complete the following tasks by making a new dataframe, let's call it "nhl_clean":
+
+#### 1A. Keep only the variables that will be used in the analysis: namefirst, namelast, penaltyminutescareer, penaltyminutes2019season, pimyr, team, teamcode,
+
+#### 1B. Create a “fullname” column combining “namefirst” and “namelast” with a space in-between the names, in addition to that, make sure that the names are properly capitalized
+
+#### 1C. Drop “namefirst” and “namelast” after creating "fullname"
+
+```{r}
+# Code to do questions 1A-1C
+nhl_clean <- nhl_data |>
+  select(namefirst, namelast, penaltyminutescareer, 
+         penaltyminutes2019season, pimyr, team, teamcode, age, height, weight, birthplace, position, captaincode) |>
+  mutate(fullname = str_c(namefirst, namelast, sep = " "),
+          fullname = str_to_title(fullname)) |>
+  select(-namefirst, -namelast)
+```
+
+# SIMULATION
+
+In this section, you will be simulating some expected inferential statistics about the variable 'penaltyminutes2019season' ::: {.callout-tip} There are lots of ways penalty minutes are dished out in hockey! Typically, we see some variation of 3 core types: - Minors, where players receive a 2 minute penalty and their team is short a player on the ice - Major, where players receive a 5 minute penalty and their team is short a player on the ice - Misconducts, where players receive a 10 minute penalty and their team is **NOT** short a player on the ice
+
+This might help contextualize some of this data! :::
+
+### Question 2: Find the minimum, maximum, mean, and standard deviation penaltyminutes2019season. Format it nicely with kable()
+
+```{r}
+nhl_clean |> 
+  select(penaltyminutes2019season) |> 
+  summarise(max_pim = max(penaltyminutes2019season, na.rm = T),
+         min_pim = min(penaltyminutes2019season, na.rm = T),
+         mean_pim = mean(penaltyminutes2019season,
+                         na.rm = T),
+         std_pim = sd(penaltyminutes2019season, na.rm = T)) |> 
+  kable()
+
+  
+```
+
+### Question #3: Simulate a normal distribution using the penaltyminutes2019season variable. Then, find some other interesting statistics to create a box-and-whisker plot for
+
+#### 3A. Simulation, using at least n = 1000.
+
+```{r}
+sim_pim <- rnorm(n = 1000, mean = 4.507, sd = 5.312)
+head(sim_pim, n=5)
+```
+
+#### 3B. Create a histogram of your simulated values
+
+::: callout-tip
+You are going to have to turn `sim_pim` into a dataframe to use ggplot. Think about how you can use data.frame() to do this!
+:::
+
+```{r}
+# there is a dataframe issue here. Same with question 3D
+sim_df <- data.frame(sim_pim = sim_pim)
+
+ggplot(sim_df, aes(x = sim_pim)) +
+  geom_histogram(bins = 4, color = "white")
+```
+
+#### 3C. Find the 25th, 50th, and 75th percentiles for penaltyminutes2019.
+
+```{r}
+twentyfifth <- qnorm(0.25, mean = 4.507, sd = 5.312)
+fifty <- qnorm(0.5, mean = 4.507, sd = 5.312)
+seventyfifth <- qnorm(0.75, mean = 4.507, sd = 5.312)
+```
+
+#### 3D. Create a box-and-whisker plot for penaltyminutes2019 using ggplot2 graphics.
+
+```{r}
+ggplot(nhl_data$penaltyminutes2019, aes(x = sim_pim)) + 
+  geom_boxplot()
+```
+
+### Question 4: Find what player has the highest penalty minutes in the 2018-2019 season. Additionally, find their team, age, height, weight, birthplace, position, and captain code, and put it in a nicely formatted table with kable(). Call your new created vector 'rude_player'
+
+```{r}
+rude_player <- nhl_clean |> 
+  slice_max(penaltyminutes2019season) |> 
+  select(fullname, team, age, height, weight, birthplace, position, captaincode) |>
+  kable()
+
+
+kable(
+  rude_player,
+  caption = "Player with the Highest Penalty Minutes in 2018-2019"
+)
+```
+
+# Data Analysis
+
+Here, you will be using this data to conduct some classic statistical tests to get a better understanding of hockey penalties. **Maybe this will help you understand hockey penalties more!**
+
+### Question 5: Do a Chi Square test of independence to explain penalty minutes by NHL Team.
+
+```{r}
+pimteam <- chisq.test(nhl_clean$team, nhl_clean$penaltyminutes2019season)
+```
+
+### Question 6: Create an ANOVA table explaining penalty minutes by player height and weight.
+
+```{r}
+primaov <- aov(penaltyminutes2019season ~ height + weight, 
+               data = nhl_clean)
+primaov
+```
+
+### Question 7a: Create a linear regression model based on the `penaltyminutes2019season` and `weight` variables as seen in question #6.
+
+::: callout-hint
+Use the tidy() function to make a clean and easy to read data frame output of our model information!
+:::
+
+```{r}
+weightlm <- lm(penaltyminutes2019season ~ weight,
+             data = nhl_clean)
+
+# Broom output
+tidy(weightlm)
+```
+
+###Question 7b: Now, create a graph of this relationship using ggplot & broom packages.
+
+```{r}
+ggplot(nhl_clean, aes(x = weight, y = penaltyminutes2019season)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+# Shot Map
+
+Shot maps are a unique way to visualize how real NHL games are played! The following questions will guide you on making your very own shot maps. ::: {callout-warning} Make sure you have **ALL** applicable packages loaded :::
+
+### Question 8: Find which game our rude player has the most play-action in the play-by-play data.
+
+```{r}
+pdp <- pdp |>
+  mutate(game_date = as.Date(date_time))
+
+rude_player_game <- pdp |>
+  count(game_id, game_date, home_name, away_name, sort = TRUE) |>
+  slice(1)
+
+rude_player_game |>
+  kable(
+    caption = "Game where Cody McLeod had the most play-by-play action",
+    col.names = c("Game ID", "Date", "Home Team", "Away Team", "Number of Events")
+  )
+```
+
+### Question 9: Now that you have found which game our rude player had the most action in, create a shot map that shows where the players shot at the goal from the ice.
+
+::: callout-hint
+Practice using the documentation from the following website:
+
+https://hockeyr.netlify.app/
+
+You don't need to change much about the code, pay close attention to the first few lines of code 🙊
+:::
+
+```{r}
+pdp = read.csv("SHOTMAPNEEDSTHISDATA.csv")
+
+pdp <- pdp |> 
+        mutate(game_date = as.Date(date_time))
+
+# get single game
+game <- pdp %>%
+  filter(game_date == "2018-11-13" & home_abbreviation == "NYR")
+
+# grab team logos & colors
+team_logos <- hockeyR::team_logos_colors %>%
+  filter(team_abbr == unique(game$home_abbreviation) | team_abbr == unique(game$away_abbreviation)) %>%
+  # add in dummy variables to put logos on the ice
+  mutate(x = ifelse(full_team_name == unique(game$home_name), 50, -50),
+         y = 0)
+
+# add transparency to logo
+transparent <- function(img) {
+  magick::image_fx(img, expression = "0.3*a", channel = "alpha")
+}
+
+# get only shot events
+fenwick_events <- c("MISSED_SHOT","SHOT","GOAL")
+
+shots <- game %>% filter(event_type %in% fenwick_events) %>%
+  # adding team colors
+  left_join(team_logos, by = c("event_team_abbr" = "team_abbr"))
+
+# create shot plot
+geom_hockey("nhl") +
+  ggimage::geom_image(
+    data = team_logos,
+    aes(x = x, y = y, image = team_logo_espn),
+    image_fun = transparent, size = 0.22, asp = 2.35
+    ) +
+  geom_point(
+    data = shots,
+    aes(x_fixed, y_fixed),
+    size = 6,
+    color = shots$team_color1,
+    shape = ifelse(shots$event_type == "GOAL", 19, 1)
+    ) +
+  labs(
+    title = glue::glue("{unique(game$away_name)} @ {unique(game$home_name)}"),
+    subtitle = glue::glue(
+    "{unique(game$game_date)}\n
+    {unique(shots$away_abbreviation)} {unique(shots$away_final)} - {unique(shots$home_final)} {unique(shots$home_abbreviation)}"
+    ),
+    caption = "data from hockeyR | plot made with sportyR"
+    ) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5),
+    plot.caption = element_text(hjust = .9)
+    )
+```
+
+### Question 10: Now that you know how shot map creation works, make a function that will create a shot map for any game we would like. Make the function take a `date` argument, along with a `hometeam` argument. Name your function `getshotmap`. Test your function with with the 2018-10-03 TOR prompt below this question!
+
+```{r}
+getshotmap <- function(date, hometeam){
+
+# get single game
+game <- pdp %>%
+  filter(game_date == date & home_abbreviation == hometeam)
+
+# grab team logos & colors
+team_logos <- hockeyR::team_logos_colors %>%
+  filter(team_abbr == unique(game$home_abbreviation) | team_abbr == unique(game$away_abbreviation)) %>%
+  # add in dummy variables to put logos on the ice
+  mutate(x = ifelse(full_team_name == unique(game$home_name), 50, -50),
+         y = 0)
+
+# add transparency to logo
+transparent <- function(img) {
+  magick::image_fx(img, expression = "0.3*a", channel = "alpha")
+}
+
+# get only shot events
+fenwick_events <- c("MISSED_SHOT","SHOT","GOAL")
+
+shots <- game %>% filter(event_type %in% fenwick_events) %>%
+  # adding team colors
+  left_join(team_logos, by = c("event_team_abbr" = "team_abbr"))
+
+# create shot plot
+geom_hockey("nhl") +
+  ggimage::geom_image(
+    data = team_logos,
+    aes(x = x, y = y, image = team_logo_espn),
+    image_fun = transparent, size = 0.22, asp = 2.35
+    ) +
+  geom_point(
+    data = shots,
+    aes(x_fixed, y_fixed),
+    size = 6,
+    color = shots$team_color1,
+    shape = ifelse(shots$event_type == "GOAL", 19, 1)
+    ) +
+  labs(
+    title = glue::glue("{unique(game$away_name)} @ {unique(game$home_name)}"),
+    subtitle = glue::glue(
+    "{unique(game$game_date)}\n
+    {unique(shots$away_abbreviation)} {unique(shots$away_final)} - {unique(shots$home_final)} {unique(shots$home_abbreviation)}"
+    ),
+    caption = "data from hockeyR | plot made with sportyR"
+    ) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5),
+    plot.caption = element_text(hjust = .9)
+    )
+
+}
+
+```
+
+#### Question 10 Test
+
+```{r}
+getshotmap("2018-10-03", "TOR")
+```
+
+# Player Profile
+
+We have so much data about our beloved rude player! Its now time to create a professional player profile!
+
+### Question 11: Create a neatly organized player profile for our rude player! Include:
+
+-   a nicely formatted table with their name, age, height, birthplace, position, and team.
+-   a photo of this player
+-   a shot map of this player's most active game
+-   an interesting statistic about high penalty minutes
+
+```{r}
+# Rude player profile
+rude_player_profile <- nhl_clean |>
+  slice_max(penaltyminutes2019season, n = 1, with_ties = FALSE) |>
+  select(fullname, age, height, birthplace, position, team, penaltyminutes2019season)
+
+rude_player_profile |>
+  kable(
+    caption = "Player Profile: NHL's Rudest Player",
+    col.names = c("Name", "Age", "Height", "Birthplace", "Position", "Team", "Penalty Minutes")
+  ) |>
+  kable_styling(full_width = FALSE)
+
+
+knitr::include_graphics(
+  "https://cms.nhl.bamgrid.com/images/headshots/current/168x168/8469457.jpg"
+)
+
+
+pim_cutoff <- quantile(nhl_clean$penaltyminutes2019season, 0.95, na.rm = TRUE)
+
+nhl_clean |>
+  summarise(
+    rude_player_pim = rude_player_profile$penaltyminutes2019season,
+    league_average_pim = mean(penaltyminutes2019season, na.rm = TRUE),
+    top_5_percent_cutoff = pim_cutoff,
+    rude_player_is_top_5_percent = rude_player_pim >= top_5_percent_cutoff
+  ) |>
+  kable(
+    digits = 2,
+    caption = "How unusual are this player's penalty minutes?"
+  ) |>
+  kable_styling(full_width = FALSE)
+```
