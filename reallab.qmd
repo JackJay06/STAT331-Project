@@ -14,8 +14,6 @@ execute:
   echo: true 
   message: false 
   warning: false
----git branch -M main
-git push -u origin main
 ---
 
 # Lab Introduction
@@ -69,9 +67,13 @@ The play-by-play dataset is huge, so we've cleaned it for you! However, the seco
 
 #### 1A. Keep only the variables that will be used in the analysis: namefirst, namelast, penaltyminutescareer, penaltyminutes2019season, pimyr, team, teamcode,
 
-#### 1B. Create a “fullname” column combining “namefirst” and “namelast” with a space in-between the names, in addition to that, make sure that the names are properly capitalized. 
+#### 1B. Create a “fullname” column combining “namefirst” and “namelast” with a space in-between the names, in addition to that, make sure that the names are properly capitalized.
 
 #### 1C. Drop “namefirst” and “namelast” after creating "fullname"
+
+::: callout-tip
+You might want to look into 'stringr' functions, specifically 'str_c' and 'str_to_title" as they might be useful to you!
+:::
 
 ```{r}
 # Code to do questions 1A-1C
@@ -106,9 +108,8 @@ nhl_clean |>
 
 ### Question 3: Simulate a normal distribution using the penaltyminutes2019season variables you found above, using at least n = 1000.
 
-:::callout-tip
-If you're not sure how to create this distribution, remind yourself how using the notes from week 8 found below
-https://manncz.github.io/stat331-calpoly-s26/slides/week-8/w8-simulation.html#/title-slide
+::: callout-tip
+If you're not sure how to create this distribution, remind yourself how using the notes from week 8 found below https://manncz.github.io/stat331-calpoly-s26/slides/week-8/w8-simulation.html#/title-slide
 :::
 
 ```{r}
@@ -162,8 +163,6 @@ kable(
 # Data Analysis
 
 Here, you will be using this data to conduct some classic statistical tests to get a better understanding of hockey penalties. **Maybe this will help you understand hockey penalties more!**
-
-
 
 ### Question 5a: Create a linear regression model based on the `penaltyminutes2019season` and `weight` variables as seen in question #6.
 
