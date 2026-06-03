@@ -16,6 +16,8 @@ execute:
   echo: true 
   message: false 
   warning: false
+---git branch -M main
+git push -u origin main
 ---
 
 # Lab Introduction
