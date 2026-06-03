@@ -9,8 +9,6 @@ format:
     html-table-processing: none 
     theme: slate 
 editor: source 
-markdown: 
-    wrap: 72
 execute:  
   error: true 
   echo: true 
@@ -168,13 +166,8 @@ kable(
 
 Here, you will be using this data to conduct some classic statistical tests to get a better understanding of hockey penalties. **Maybe this will help you understand hockey penalties more!**
 
-### Question 5: Do a Chi Square test of independence to explain penalty minutes by NHL Team.
 
-```{r}
-pimteam <- chisq.test(nhl_clean$team, nhl_clean$penaltyminutes2019season)
-```
-
-### Question 6: Create an ANOVA table explaining penalty minutes by player height and weight.
+### Question 5: Create an ANOVA table explaining penalty minutes by player height and weight.
 
 ```{r}
 primaov <- aov(penaltyminutes2019season ~ height + weight, 
@@ -182,7 +175,7 @@ primaov <- aov(penaltyminutes2019season ~ height + weight,
 primaov
 ```
 
-### Question 7a: Create a linear regression model based on the `penaltyminutes2019season` and `weight` variables as seen in question #6.
+### Question 6a: Create a linear regression model based on the `penaltyminutes2019season` and `weight` variables as seen in question #6.
 
 ::: callout-hint
 Use the tidy() function to make a clean and easy to read data frame output of our model information!
@@ -196,7 +189,7 @@ weightlm <- lm(penaltyminutes2019season ~ weight,
 tidy(weightlm)
 ```
 
-###Question 7b: Now, create a graph of this relationship using ggplot & broom packages.
+###Question 6b: Now, create a graph of this relationship using ggplot & broom packages.
 
 ```{r}
 ggplot(nhl_clean, aes(x = weight, y = penaltyminutes2019season)) +
@@ -208,7 +201,7 @@ ggplot(nhl_clean, aes(x = weight, y = penaltyminutes2019season)) +
 
 Shot maps are a unique way to visualize how real NHL games are played! The following questions will guide you on making your very own shot maps. ::: {callout-warning} Make sure you have **ALL** applicable packages loaded :::
 
-### Question 8: Find which game our rude player has the most play-action in the play-by-play data.
+### Question 7: Find which game our rude player has the most play-action in the play-by-play data.
 
 ```{r}
 pdp <- pdp |>
@@ -225,7 +218,7 @@ rude_player_game |>
   )
 ```
 
-### Question 9: Now that you have found which game our rude player had the most action in, create a shot map that shows where the players shot at the goal from the ice.
+### Question 8: Now that you have found which game our rude player had the most action in, create a shot map that shows where the players shot at the goal from the ice.
 
 ::: callout-hint
 Practice using the documentation from the following website:
@@ -293,7 +286,7 @@ geom_hockey("nhl") +
     )
 ```
 
-### Question 10: Now that you know how shot map creation works, make a function that will create a shot map for any game we would like. Make the function take a `date` argument, along with a `hometeam` argument. Name your function `getshotmap`. Test your function with with the 2018-10-03 TOR prompt below this question!
+### Question 9: Now that you know how shot map creation works, make a function that will create a shot map for any game we would like. Make the function take a `date` argument, along with a `hometeam` argument. Name your function `getshotmap`. Test your function with with the 2018-10-03 TOR prompt below this question!
 
 ```{r}
 getshotmap <- function(date, hometeam){
@@ -353,7 +346,7 @@ geom_hockey("nhl") +
 
 ```
 
-#### Question 10 Test
+#### Question 9 Test
 
 ```{r}
 getshotmap("2018-10-03", "TOR")
@@ -363,7 +356,7 @@ getshotmap("2018-10-03", "TOR")
 
 We have so much data about our beloved rude player! Its now time to create a professional player profile!
 
-### Question 11: Create a neatly organized player profile for our rude player! Include:
+### Question 10: Create a neatly organized player profile for our rude player! Include:
 
 -   a nicely formatted table with their name, age, height, birthplace, position, and team.
 -   a photo of this player
