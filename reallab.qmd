@@ -52,7 +52,7 @@ Additionally, we need to read in our .csv hockey datasets!
 ```{r}
 nhl_data <- read_csv("NHL Player and General Data.csv")
 
-pbp_data <- read_csv("PBP2018-2019.csv")
+pbp_data <- read_csv("PBPData.csv")
 ```
 
 # Cleaning
@@ -64,13 +64,6 @@ The multi-billion dollar NHL cannot afford to have clean data, so we need to cle
 ::: callout-important
 The play-by-play dataset is huge, so we've cleaned it for you! However, the second dataset of this lab (the NHL Player Data) will be YOUR responsibility to clean :)
 :::
-
-```{r}
-# Code Cleaning play-by-play data
-pdp <- pbp_data |> 
-  select(event_id, description, period, home_score, away_score, event_player_1_name, event_player_2_name, event_player_3_name, event_player_4_name, event_goalie_name, strength, penalty_severity, penalty_minutes, empty_net, x, y, x_fixed, y_fixed, shot_distance, shot_angle, home_on_1, home_on_2, home_on_3, home_on_4, home_on_5, home_on_6, away_on_1, away_on_2, away_on_3, away_on_4, away_on_5, away_on_6, home_goalie, away_goalie, game_id, event_player_1_id, event_player_2_id, event_player_3_id, event_player_4_id, period_time, date_time, event_team_abbr, home_final, away_final, game_start, game_end, home_name,  home_division_name_short, home_conference_name, away_name, away_division_name_short, away_conference_name, home_id, away_id) |> 
-  filter(event_player_1_name == "Cody.McLeod" | event_player_2_name == "Cody.McLeod" | event_player_3_name == "Cody.McLeod" | event_player_4_name == "Cody.McLeod")
-```
 
 ### Question 1: To help simplify and clean the dataset for analysis, complete the following tasks by making a new dataframe, let's call it "nhl_clean":
 
@@ -169,15 +162,8 @@ kable(
 Here, you will be using this data to conduct some classic statistical tests to get a better understanding of hockey penalties. **Maybe this will help you understand hockey penalties more!**
 
 
-### Question 5: Create an ANOVA table explaining penalty minutes by player height and weight.
 
-```{r}
-primaov <- aov(penaltyminutes2019season ~ height + weight, 
-               data = nhl_clean)
-primaov
-```
-
-### Question 6a: Create a linear regression model based on the `penaltyminutes2019season` and `weight` variables as seen in question #6.
+### Question 5a: Create a linear regression model based on the `penaltyminutes2019season` and `weight` variables as seen in question #6.
 
 ::: callout-hint
 Use the tidy() function to make a clean and easy to read data frame output of our model information!
@@ -191,7 +177,7 @@ weightlm <- lm(penaltyminutes2019season ~ weight,
 tidy(weightlm)
 ```
 
-###Question 6b: Now, create a graph of this relationship using ggplot & broom packages.
+###Question 5b: Now, create a graph of this relationship using ggplot & broom packages.
 
 ```{r}
 ggplot(nhl_clean, aes(x = weight, y = penaltyminutes2019season)) +
@@ -203,13 +189,13 @@ ggplot(nhl_clean, aes(x = weight, y = penaltyminutes2019season)) +
 
 Shot maps are a unique way to visualize how real NHL games are played! The following questions will guide you on making your very own shot maps. ::: {callout-warning} Make sure you have **ALL** applicable packages loaded :::
 
-### Question 7: Find which game our rude player has the most play-action in the play-by-play data.
+### Question 6: Find which game our rude player has the most play-action in the play-by-play data.
 
 ```{r}
-pdp <- pdp |>
+pbp_data <- pbp_data |>
   mutate(game_date = as.Date(date_time))
 
-rude_player_game <- pdp |>
+rude_player_game <- pbp_data |>
   count(game_id, game_date, home_name, away_name, sort = TRUE) |>
   slice(1)
 
@@ -220,7 +206,7 @@ rude_player_game |>
   )
 ```
 
-### Question 8: Now that you have found which game our rude player had the most action in, create a shot map that shows where the players shot at the goal from the ice.
+### Question 7: Now that you have found which game our rude player had the most action in, create a shot map that shows where the players shot at the goal from the ice.
 
 ::: callout-hint
 Practice using the documentation from the following website:
@@ -231,13 +217,9 @@ You don't need to change much about the code, pay close attention to the first f
 :::
 
 ```{r}
-pdp = read.csv("SHOTMAPNEEDSTHISDATA.csv")
-
-pdp <- pdp |> 
-        mutate(game_date = as.Date(date_time))
 
 # get single game
-game <- pdp %>%
+game <- pbp_data |> 
   filter(game_date == "2018-11-13" & home_abbreviation == "NYR")
 
 # grab team logos & colors
@@ -288,13 +270,13 @@ geom_hockey("nhl") +
     )
 ```
 
-### Question 9: Now that you know how shot map creation works, make a function that will create a shot map for any game we would like. Make the function take a `date` argument, along with a `hometeam` argument. Name your function `getshotmap`. Test your function with with the 2018-10-03 TOR prompt below this question!
+### Question 8: Now that you know how shot map creation works, make a function that will create a shot map for any game we would like. Make the function take a `date` argument, along with a `hometeam` argument. Name your function `getshotmap`. Test your function with with the 2018-10-03 TOR prompt below this question!
 
 ```{r}
 getshotmap <- function(date, hometeam){
 
 # get single game
-game <- pdp %>%
+game <- pbp_data |> 
   filter(game_date == date & home_abbreviation == hometeam)
 
 # grab team logos & colors
@@ -348,7 +330,7 @@ geom_hockey("nhl") +
 
 ```
 
-#### Question 9 Test
+#### Question 8 Test
 
 ```{r}
 getshotmap("2018-10-03", "TOR")
@@ -358,7 +340,7 @@ getshotmap("2018-10-03", "TOR")
 
 We have so much data about our beloved rude player! Its now time to create a professional player profile!
 
-### Question 10: Create a neatly organized player profile for our rude player! Include:
+### Question 9: Create a neatly organized player profile for our rude player! Include:
 
 -   a nicely formatted table with their name, age, height, birthplace, position, and team.
 -   a photo of this player
