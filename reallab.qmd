@@ -65,11 +65,11 @@ The multi-billion dollar NHL cannot afford to have clean data, so we need to cle
 The play-by-play dataset is huge, so we've cleaned it for you! However, the second dataset of this lab (the NHL Player Data) will be YOUR responsibility to clean :)
 :::
 
-### Question 1: To help simplify and clean the dataset for analysis, complete the following tasks by making a new dataframe, let's call it "nhl_clean":
+### Question 1: To help simplify and clean the dataset for analysis, complete the following tasks by making a new dataframe from our `nhl_data` dataset. Let's call it "nhl_clean":
 
 #### 1A. Keep only the variables that will be used in the analysis: namefirst, namelast, penaltyminutescareer, penaltyminutes2019season, pimyr, team, teamcode,
 
-#### 1B. Create a “fullname” column combining “namefirst” and “namelast” with a space in-between the names, in addition to that, make sure that the names are properly capitalized
+#### 1B. Create a “fullname” column combining “namefirst” and “namelast” with a space in-between the names, in addition to that, make sure that the names are properly capitalized. 
 
 #### 1C. Drop “namefirst” and “namelast” after creating "fullname"
 
@@ -89,7 +89,7 @@ In this section, you will be simulating some expected inferential statistics abo
 
 This might help contextualize some of this data! :::
 
-### Question 2: Find the minimum, maximum, mean, and standard deviation penaltyminutes2019season. Format it nicely with kable()
+### Question 2: Find the minimum, maximum, mean, and standard deviation of penaltyminutes2019season. Print these values nicely in a table with kable()
 
 ```{r}
 nhl_clean |> 
@@ -104,30 +104,32 @@ nhl_clean |>
   
 ```
 
-### Question #3: Simulate a normal distribution using the penaltyminutes2019season variable. Then, find some other interesting statistics to create a box-and-whisker plot for
+### Question 3: Simulate a normal distribution using the penaltyminutes2019season variables you found above, using at least n = 1000.
 
-#### 3A. Simulation, using at least n = 1000.
+:::callout-tip
+If you're not sure how to create this distribution, remind yourself how using the notes from week 8 found below
+https://manncz.github.io/stat331-calpoly-s26/slides/week-8/w8-simulation.html#/title-slide
+:::
 
 ```{r}
 sim_pim <- rnorm(n = 1000, mean = 4.507, sd = 5.312)
 head(sim_pim, n=5)
 ```
 
-#### 3B. Create a histogram of your simulated values
+### Question 4. Create a histogram of your simulated values to visualize your simulated distribution. Make sure it looks how you would expect a normal distribution to look!
 
 ::: callout-tip
 You are going to have to turn `sim_pim` into a dataframe to use ggplot. Think about how you can use data.frame() to do this!
 :::
 
 ```{r}
-# there is a dataframe issue here. Same with question 3D
 sim_df <- data.frame(sim_pim = sim_pim)
 
 ggplot(sim_df, aes(x = sim_pim)) +
-  geom_histogram(bins = 4, color = "white")
+  geom_histogram(color = "white")
 ```
 
-#### 3C. Find the 25th, 50th, and 75th percentiles for penaltyminutes2019.
+#### 5. Find the 25th, 50th, and 75th percentiles for penaltyminutes2019.
 
 ```{r}
 twentyfifth <- qnorm(0.25, mean = 4.507, sd = 5.312)
