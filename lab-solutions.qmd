@@ -63,7 +63,7 @@ The multi-billion dollar NHL cannot afford to have clean data, so we need to cle
 The play-by-play dataset is huge, so we've cleaned it for you! However, the second dataset of this lab (the NHL Player Data) will be YOUR responsibility to clean :)
 :::
 
-### Question 1: To help simplify and clean the dataset for analysis, complete the following tasks by making a new dataframe from our `nhl_data` dataset. Let's call it "nhl_clean":
+### **Question 1: To help simplify and clean the dataset for analysis, complete the following tasks by making a new dataframe from our `nhl_data` dataset. Let's call it "nhl_clean":**
 
 #### 1A. Keep only the variables that will be used in the analysis: namefirst, namelast, penaltyminutescareer, penaltyminutes2019season, pimyr, team, teamcode,
 
@@ -87,7 +87,7 @@ In this section, you will be simulating some expected inferential statistics abo
 
 This might help contextualize some of this data! :::
 
-### Question 2: Find the minimum, maximum, mean, and standard deviation of penaltyminutes2019season. Print these values nicely in a table with kable()
+### **Question 2: Find the minimum, maximum, mean, and standard deviation of penaltyminutes2019season. Print these values nicely in a table with kable()**
 
 ```{r}
 nhl_clean |> 
@@ -102,7 +102,7 @@ nhl_clean |>
   
 ```
 
-### Question 3: Simulate a normal distribution using the penaltyminutes2019season variables you found above, using at least n = 1000.
+### **Question 3: Simulate a normal distribution using the penaltyminutes2019season variables you found above, using at least n = 1000.**
 
 ::: callout-tip
 If you're not sure how to create this distribution, remind yourself how using the notes from week 8 found below https://manncz.github.io/stat331-calpoly-s26/slides/week-8/w8-simulation.html#/title-slide
@@ -113,7 +113,7 @@ sim_pim <- rnorm(n = 1000, mean = 4.507, sd = 5.312)
 head(sim_pim, n=5)
 ```
 
-### Question 4. Create a histogram of your simulated values to visualize your simulated distribution. Make sure it looks how you would expect a normal distribution to look!
+### **Question 4: Create a histogram of your simulated values to visualize your simulated distribution. Make sure it looks how you would expect a normal distribution to look!**
 
 ::: callout-tip
 You are going to have to turn `sim_pim` into a dataframe to use ggplot. Think about how you can use data.frame() to do this!
@@ -126,7 +126,7 @@ ggplot(sim_df, aes(x = sim_pim)) +
   geom_histogram(color = "white")
 ```
 
-#### 5. Find the 25th, 50th, and 75th percentiles for penaltyminutes2019.
+#### **Question 5. Find the 25th, 50th, and 75th percentiles for penaltyminutes2019.**
 
 ```{r}
 twentyfifth <- qnorm(0.25, mean = 4.507, sd = 5.312)
@@ -138,14 +138,14 @@ fifty
 seventyfifth
 ```
 
-#### 6. Create a box-and-whisker plot for penaltyminutes2019 using ggplot2 graphics.
+#### **Question 6. Create a box-and-whisker plot for penaltyminutes2019 using ggplot2 graphics.**
 
 ```{r}
 ggplot(nhl_data$penaltyminutes2019, aes(x = sim_pim)) + 
   geom_boxplot()
 ```
 
-### Question 7: Find what player has the highest penalty minutes in the 2018-2019 season. Additionally, find their team, age, height, weight, birthplace, position, and captain code, and put it in a nicely formatted table with kable(). Call your new created vector 'rude_player'
+### **Question 7: Find what player has the highest penalty minutes in the 2018-2019 season. Additionally, find their team, age, height, weight, birthplace, position, and captain code, and put it in a nicely formatted table with kable(). Call your new created vector 'rude_player'**
 
 ```{r}
 rude_player <- nhl_clean |> 
@@ -164,7 +164,7 @@ kable(
 
 Here, you will be using this data to conduct some classic statistical tests to get a better understanding of hockey penalties. **Maybe this will help you understand hockey penalties more!**
 
-### Question 8a: Create a linear regression model based on the `penaltyminutes2019season` and `weight`
+### **Question 8a: Create a linear regression model based on the `penaltyminutes2019season` and `weight`**
 
 ::: callout-hint
 Use the tidy() function to make a clean and easy to read data frame output of our model information!
@@ -178,7 +178,7 @@ weightlm <- lm(penaltyminutes2019season ~ weight,
 broom::tidy(weightlm)
 ```
 
-###Question 8b: Now, create a graph of this relationship using ggplot & broom packages.
+### **Question 8b: Now, create a graph of this relationship using ggplot & broom packages.**
 
 ```{r}
 ggplot(nhl_clean, aes(x = weight, y = penaltyminutes2019season)) +
@@ -190,7 +190,7 @@ ggplot(nhl_clean, aes(x = weight, y = penaltyminutes2019season)) +
 
 Shot maps are a unique way to visualize how real NHL games are played! The following questions will guide you on making your very own shot maps. ::: {.callout-warning} Make sure you have **ALL** applicable packages loaded :::
 
-### Question 9: Find which game our rude player has the most play-action in the play-by-play data.
+### **Question 9: Find which game our rude player has the most play-action in the play-by-play data.**
 
 ```{r}
 pbp_data <- pbp_data |>
@@ -207,7 +207,7 @@ rude_player_game |>
   )
 ```
 
-### Question 10: Now that you have found which game our rude player had the most action in, create a shot map that shows where the players shot at the goal from the ice.
+### **Question 10: Now that you have found which game our rude player had the most action in, create a shot map that shows where the players shot at the goal from the ice.**
 
 ::: callout-hint
 Practice using the documentation from the following website:
@@ -345,7 +345,7 @@ getshotmap("2018-10-03", "TOR")
 
 We have so much data about our beloved rude player! Its now time to create a professional player profile!
 
-### Question 12: Create a neatly organized player profile for our rude player! Include:
+### **Question 12: Create a neatly organized player profile for our rude player! Include:**
 
 -   a nicely formatted table with their name, age, height, birthplace, position, and team.
 -   a photo of this player (bonus points if they are fighting!)
